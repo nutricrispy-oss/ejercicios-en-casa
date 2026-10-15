@@ -41,7 +41,7 @@ function svgAt(i,k){
  return h}
 function loop(t){
  const k=(1-Math.cos(t/2600*6.2832))/2;
- document.querySelectorAll('svg[data-f]').forEach(e=>{if(e.offsetParent)e.innerHTML=svgAt(+e.dataset.f,k)});
+ document.querySelectorAll('svg[data-f]').forEach(e=>{if(e.getClientRects().length)e.innerHTML=svgAt(+e.dataset.f,k)});
  requestAnimationFrame(loop)}
 if(typeof requestAnimationFrame!='undefined')requestAnimationFrame(loop);
 if(typeof module!='undefined')module.exports={FIG,svgAt};
