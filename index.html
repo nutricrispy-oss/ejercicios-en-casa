@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>FitCasa</title>
+<style>
+:root{--bg:#f3f6f4;--card:#fff;--tx:#14231f;--mu:#5b6f69;--pr:#0f766e;--on:#fff;--bd:#d9e4e0}
+body.dark{--bg:#0e1816;--card:#16231f;--tx:#e8f2ef;--mu:#93aaa3;--bd:#27403a;--pr:#2dd4bf;--on:#04201c}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:84px}
+header{background:var(--pr);color:var(--on);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));font-weight:800;font-size:21px;letter-spacing:.2px}
+main{padding:12px;max-width:640px;margin:auto}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{margin:0 0 8px;font-size:17px}
+p{margin:6px 0}
+.b{display:block;width:100%;background:var(--pr);color:var(--on);border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:700}
+.b.s{background:transparent;color:var(--pr);border:1.5px solid var(--pr)}
+.g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st{text-align:center}.st b{display:block;font-size:26px;color:var(--pr)}.st span{font-size:12px;color:var(--mu)}
+input,select{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font-size:16px;margin:4px 0 10px}
+label{font-size:13px;color:var(--mu)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;color:var(--mu);padding:8px 0;font-size:11px}
+nav button.on{color:var(--pr);font-weight:700}
+nav i{display:block;font-size:21px;font-style:normal}
+.chips{display:flex;gap:6px;margin-bottom:10px}
+.chips button{flex:1;padding:10px;border-radius:20px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:15px}
+.chips .on{background:var(--pr);color:var(--on);border-color:var(--pr);font-weight:700}
+details{border-top:1px solid var(--bd);padding:9px 0}details:first-child{border-top:0}
+summary{font-weight:600}
+.tag{display:inline-block;font-size:12px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:1px 8px;color:var(--mu)}
+.bar{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pr)}
+.days{display:flex;gap:6px;align-items:flex-end}
+.days div{flex:1;text-align:center;font-size:11px;color:var(--mu)}
+.days i{display:block;background:var(--pr);border-radius:4px 4px 0 0;min-height:2px}
+.note{color:var(--mu);font-size:13px}
+#pl{display:none;position:fixed;inset:0;background:var(--bg);z-index:9;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:10px}
+#pl .b{max-width:320px}
+.big{font-size:110px;font-weight:800;color:var(--pr);line-height:1}
+</style></head>
+<body>
+<header>🏠 FitCasa</header>
+<main id="app"></main>
+<nav></nav>
+<div id="pl"></div>
+<script>
+const $=s=>document.querySelector(s),K='fitcasa_v1';
+const key=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const fmt=k=>k.split('-').reverse().join('/'),today=()=>key();
+const parse=s=>{const m=s.trim().match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);if(!m)return null;const d=new Date(+m[3],+m[2]-1,+m[1]);return d.getMonth()==+m[2]-1?key(d):null};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S,T='i',V=1,P=null;
+function load(){let o=null;try{o=JSON.parse(localStorage.getItem(K))}catch(e){}S=Object.assign({name:'',w:0,h:0,lvl:1,dark:0,sessions:[],weights:[],water:{}},o||{})}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+
+// [nombre, nivel, material, pasos, versión más fácil]
+const EX=[
+['Rotación de torso sentado',1,'Silla','Sentado y erguido, manos en el pecho. Gira el torso a un lado y al otro sin mover las caderas.','Gira menos y más lento.'],
+['Elevación de rodillas sentado',1,'Silla','Sentado al borde de la silla, sujeta los lados. Sube una rodilla hacia el pecho y alterna.','Sube solo un poco la rodilla.'],
+['Extensión de piernas sentado',1,'Silla','Estira una pierna al frente y aprieta el muslo 1 s. Baja y alterna.','Sin pausa arriba.'],
+['Toque cruzado sentado',1,'Silla','Manos tras la nuca. Lleva el codo hacia la rodilla contraria y alterna, apretando el abdomen.','Toca solo con la mano.'],
+['Marcha en el lugar',1,'Ninguno','De pie junto a una pared o silla, sube las rodillas alternando a ritmo cómodo. Sin saltar.','Hazlo sentado.'],
+['Lagartijas en la pared',1,'Pared','Manos en la pared a la altura del pecho, pies atrás. Flexiona los codos acercando el pecho y empuja.','Acércate más a la pared.'],
+['Sentada a la silla',1,'Silla','Párate frente a la silla, siéntate despacio y levántate sin impulso. Usa las manos si hace falta.','Usa las manos para ayudarte.'],
+['Payasitos sin salto',2,'Ninguno','Abre un pie al costado mientras subes los brazos; vuelve y alterna. Sin saltar: bajo impacto.','Sube solo un brazo.'],
+['Sentadillas',2,'Ninguno o silla','Pies al ancho de hombros. Lleva las caderas atrás como para sentarte, rodillas hacia los dedos, y sube.','Toca la silla en cada bajada.'],
+['Lagartijas inclinadas',2,'Mesa o silla firme','Manos en el borde de una mesa o silla firme, cuerpo recto. Baja el pecho y empuja.','Usa una superficie más alta.'],
+['Caminata rápida de 10 m',2,'Espacio de 10 m','Camina rápido 10 m, da la vuelta y regresa. Brazos activos, pisada suave.','Camina a ritmo normal.'],
+['Curl con botellas',2,'2 botellas con agua','Una botella en cada mano, codos pegados al cuerpo. Sube las botellas y baja controlado.','Usa botellas más livianas.'],
+['Plancha sobre mesa',2,'Mesa o silla firme','Antebrazos en la mesa, cuerpo en línea recta, abdomen apretado. Respira normal.','Aguanta menos tiempo.'],
+['Sentadilla con mochila',3,'Mochila con libros','Sostén la mochila contra el pecho y haz sentadillas profundas y controladas.','Sentadilla sin peso.'],
+['Lagartijas en el piso',3,'Piso o colchoneta','Manos bajo los hombros, cuerpo recto. Baja el pecho al piso y sube.','Apoya las rodillas.'],
+['Payasitos completos',3,'Ninguno','Salta abriendo piernas y brazos y vuelve. Impacto medio: opcional.','Haz los payasitos sin salto.'],
+['Piques de 10 m',3,'Espacio de 10 m','Corre fuerte 10 m, frena y regresa caminando. Impacto alto: calienta antes y usa calzado.','Trota suave o camina rápido.'],
+['Zancadas hacia atrás',3,'Ninguno','Da un paso atrás y baja la rodilla casi al piso; sube y alterna.','Apóyate en una silla.']
+];
+const R={1:[0,1,2,3,4,5,6],2:[4,7,8,9,10,11,12,3],3:[4,15,13,14,17,16,12,11]};
+const L={1:{n:'Novato',w:30,r:30,s:2},2:{n:'Intermedio',w:40,r:20,s:3},3:{n:'Pro',w:45,r:15,s:3}};
+const TIPS=['Calienta 2 minutos antes de empezar: marcha suave y giros de hombros.','La constancia vale más que la intensidad: 3 días por semana ya suman.','Respira de forma continua; no aguantes el aire en el esfuerzo.','Toma agua antes, durante y después de la rutina.','Duerme 7 a 8 horas: ahí tu cuerpo se recupera.','Si algo duele (no el cansancio normal), detente y consulta.'];
+
+const steps=l=>{const c=L[l],a=[];R[l].forEach(i=>{for(let s=1;s<=c.s;s++){a.push({t:'w',i,s,d:c.w});a.push({t:'r',i,s,d:c.r})}});a.pop();return a};
+const mins=l=>Math.round(steps(l).reduce((a,x)=>a+x.d,0)/60);
+const wTot=()=>(S.water[today()]||[]).reduce((a,b)=>a+b,0);
+const sesToday=()=>S.sessions.filter(x=>x.d==today()).length;
+const goal=()=>Math.round((S.w?S.w*35:2000)/50)*50+sesToday()*350;
+const imc=()=>S.w&&S.h?S.w/((S.h/100)**2):0;
+const cat=v=>v<18.5?'Bajo peso':v<25?'Peso normal':v<30?'Sobrepeso':'Obesidad';
+function streak(){const ds=new Set(S.sessions.map(x=>x.d));let n=0,d=new Date();if(!ds.has(key(d)))d.setDate(d.getDate()-1);while(ds.has(key(d))){n++;d.setDate(d.getDate()-1)}return n}
+
+const tabs=[['i','🏠','Inicio'],['r','🏋️','Rutinas'],['p','📈','Progreso'],['s','💧','Salud'],['a','⚙️','Ajustes']];
+function render(){
+ $('#app').innerHTML=({i:vI,r:vR,p:vP,s:vS,a:vA})[T]();
+ $('nav').innerHTML=tabs.map(t=>`<button class="${T==t[0]?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}</button>`).join('');
+ document.body.classList.toggle('dark',!!S.dark);
+ document.querySelector('meta[name=theme-color]').content=S.dark?'#16231f':'#0f766e'}
+function go(t){T=t;render();scrollTo(0,0)}
+
+function vI(){
+ const need=!S.w||!S.h,lv=S.sessions.filter(x=>x.l==S.lvl).length,g=goal(),w=wTot();
+ if(need)return `<div class="c"><h2>¡Bienvenido a FitCasa! 👋</h2><p>Completa tus datos para empezar.</p><label>Nombre</label><input id="n" value="${esc(S.name)}"><label>Peso (kg)</label><input id="w" type="number" inputmode="decimal"><label>Altura (cm)</label><input id="h" type="number" inputmode="numeric"><label>Nivel</label><select id="l">${[1,2,3].map(i=>`<option value="${i}">${L[i].n}</option>`).join('')}</select><button class="b" onclick="setup()">Guardar y empezar</button></div>`;
+ return `<div class="c"><h2>Hola${S.name?', '+esc(S.name):''} 👋</h2><p>Nivel <b>${L[S.lvl].n}</b> · racha de <b>${streak()}</b> día(s)</p><button class="b" onclick="play(${S.lvl})">▶ Empezar rutina (~${mins(S.lvl)} min)</button></div>
+ <div class="c"><h2>💧 Agua de hoy</h2><div class="bar"><i style="width:${Math.min(100,w/g*100)}%"></i></div><p>${w} de ${g} ml</p><button class="b s" onclick="addW(250)">+ Vaso (250 ml)</button></div>
+ <div class="c"><h2>🎯 Subir de nivel</h2><div class="bar"><i style="width:${Math.min(100,lv*10)}%"></i></div><p>${lv}/10 sesiones en ${L[S.lvl].n}${lv>=10&&S.lvl<3?'. ¡Ya puedes pasar al siguiente nivel en Ajustes!':''}</p></div>
+ <div class="c"><h2>💡 Consejo del día</h2><p>${TIPS[new Date().getDate()%TIPS.length]}</p></div>`}
+function setup(){const w=+$('#w').value,h=+$('#h').value;if(!(w>20&&w<400&&h>100&&h<250))return alert('Revisa tu peso (kg) y altura (cm).');S.name=$('#n').value.trim();S.w=w;S.h=h;S.lvl=+$('#l').value;V=S.lvl;S.weights.push({d:today(),w});save();render()}
+
+function vR(){
+ const l=V,r=R[l];
+ return `<div class="chips">${[1,2,3].map(i=>`<button class="${V==i?'on':''}" onclick="V=${i};render()">${L[i].n}</button>`).join('')}</div>
+ <div class="c"><h2>${L[l].n}: ${r.length} ejercicios</h2><p>${L[l].s} series de ${L[l].w} s, descanso de ${L[l].r} s · ~${mins(l)} min</p><button class="b" onclick="play(${l})">▶ Empezar rutina</button></div>
+ <div class="c">${r.map(i=>{const e=EX[i];return `<details><summary>${e[0]}</summary><p><span class="tag">${e[2]}</span></p><p>${e[3]}</p><p><b>Más fácil:</b> ${e[4]}</p></details>`}).join('')}</div>
+ <p class="note">Si sientes dolor, mareo o falta de aire, detente. Consulta a tu médico antes de empezar.</p>`}
+
+function vP(){
+ const days=[...Array(7)].map((_,k)=>{const d=new Date();d.setDate(d.getDate()-6+k);const kk=key(d);return['DLMMJVS'[d.getDay()],S.sessions.filter(x=>x.d==kk).reduce((a,x)=>a+x.m,0)]});
+ const mx=Math.max(10,...days.map(x=>x[1])),wk=days.reduce((a,x)=>a+x[1],0);
+ const ws=[...S.weights].sort((a,b)=>a.d<b.d?-1:1);
+ return `<div class="c g"><div class="st"><b>${S.sessions.length}</b><span>sesiones</span></div><div class="st"><b>${streak()}</b><span>racha (días)</span></div><div class="st"><b>${wk}</b><span>min. semana</span></div></div>
+ <div class="c"><h2>Últimos 7 días (min)</h2><div class="days">${days.map(x=>`<div><i style="height:${x[1]/mx*60}px"></i>${x[0]}</div>`).join('')}</div></div>
+ <div class="c"><h2>⚖️ Mi peso</h2>${spark(ws)}<label>Peso (kg)</label><input id="pw" type="number" inputmode="decimal"><label>Fecha (dd/mm/aaaa)</label><input id="pd" type="text" inputmode="numeric" value="${fmt(today())}"><button class="b" onclick="addWeight()">Guardar peso</button>${ws.slice(-5).reverse().map(x=>`<p>${fmt(x.d)}: <b>${x.w} kg</b></p>`).join('')}</div>`}
+function spark(a){if(a.length<2)return '<p class="note">Registra al menos 2 pesos para ver el gráfico.</p>';const v=a.map(x=>x.w),mn=Math.min(...v),mx=Math.max(...v),r=mx-mn||1;const p=v.map((y,i)=>(i/(v.length-1)*300).toFixed(1)+','+(50-(y-mn)/r*45).toFixed(1)).join(' ');return `<svg viewBox="0 0 300 55" width="100%"><polyline points="${p}" fill="none" stroke="var(--pr)" stroke-width="3" stroke-linejoin="round"/></svg><p class="note">De ${mn} a ${mx} kg</p>`}
+function addWeight(){const w=+$('#pw').value,d=parse($('#pd').value);if(!(w>20&&w<400))return alert('Ingresa un peso válido en kg.');if(!d)return alert('Escribe la fecha como dd/mm/aaaa.');S.weights=S.weights.filter(x=>x.d!=d);S.weights.push({d,w});S.w=[...S.weights].sort((a,b)=>a.d<b.d?-1:1).pop().w;save();render()}
+
+function imBox(){const v=imc();if(!v)return '<p>Ingresa peso y altura.</p>';return `<p style="font-size:28px;margin:4px 0"><b>${v.toFixed(1)}</b> · ${cat(v)}</p><div class="bar"><i style="width:${Math.max(0,Math.min(100,(v-15)/25*100))}%"></i></div><p class="note">Referencia OMS: 18,5 a 24,9 es normal. El IMC es solo orientativo.</p>`}
+function im(){$('#im').innerHTML=imBox()}
+function vS(){
+ const g=goal(),w=wTot();
+ return `<div class="c"><h2>Calculadora de IMC</h2><label>Peso (kg)</label><input type="number" inputmode="decimal" value="${S.w||''}" oninput="S.w=+this.value;save();im()"><label>Altura (cm)</label><input type="number" inputmode="numeric" value="${S.h||''}" oninput="S.h=+this.value;save();im()"><div id="im">${imBox()}</div></div>
+ <div class="c"><h2>💧 Agua diaria</h2><p>Meta: <b>${g} ml</b> (35 ml por kg + 350 ml por cada sesión de hoy)</p><div class="bar"><i style="width:${Math.min(100,w/g*100)}%"></i></div><p>${w} ml · ${Math.round(w/250*10)/10} vasos</p><div class="g"><button class="b s" onclick="addW(200)">+200</button><button class="b s" onclick="addW(250)">+250</button><button class="b s" onclick="addW(500)">+500</button></div><button class="b s" style="margin-top:8px" onclick="undoW()">↩ Deshacer último</button></div>`}
+function addW(n){const a=S.water[today()]||[];a.push(n);S.water[today()]=a;save();render()}
+function undoW(){(S.water[today()]||[]).pop();save();render()}
+
+function vA(){return `<div class="c"><h2>Perfil</h2><label>Nombre</label><input value="${esc(S.name)}" onchange="S.name=this.value;save()"><label>Nivel</label><select onchange="S.lvl=+this.value;V=S.lvl;save()">${[1,2,3].map(i=>`<option value="${i}" ${S.lvl==i?'selected':''}>${L[i].n}</option>`).join('')}</select><label>Modo oscuro</label><select onchange="S.dark=+this.value;save();render()"><option value="0">No</option><option value="1" ${S.dark?'selected':''}>Sí</option></select></div>
+ <div class="c"><h2>Copia de seguridad</h2><button class="b s" onclick="exp()">⬇ Exportar datos</button><input type="file" id="f" accept=".json" hidden onchange="imp(this.files[0])"><button class="b s" style="margin-top:8px" onclick="$('#f').click()">⬆ Importar datos</button><button class="b s" style="margin-top:8px" onclick="if(confirm('¿Borrar todos los datos?')){localStorage.removeItem(K);load();render()}">🗑 Borrar todo</button></div>
+ <p class="note">FitCasa v1 · Tus datos se guardan solo en este teléfono. No reemplaza la guía de un profesional de la salud.</p>`}
+function exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='fitcasa-backup-'+today()+'.json';a.click()}
+function imp(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=Object.assign(S,JSON.parse(r.result));save();render();alert('Datos importados.')}catch(e){alert('El archivo no es válido.')}};r.readAsText(f)}
+
+// Rutina guiada
+function beep(f=880,ms=120){try{const c=beep.c||(beep.c=new(window.AudioContext||window.webkitAudioContext)()),o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+ms/1000)}catch(e){}}
+function play(l){const a=steps(l);P={l,a,k:0,left:a[0].d,pause:0,el:0};$('#pl').style.display='flex';drawP();P.tm=setInterval(tick,1000);try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{})}catch(e){}}
+function tick(){if(P.pause)return;P.el++;P.left--;if(P.left>0&&P.left<=3)beep();if(P.left<=0)next();else drawP()}
+function next(){if(P.k>=P.a.length-1)return finish();P.k++;P.left=P.a[P.k].d;beep(1200,250);drawP()}
+function drawP(){const s=P.a[P.k],e=EX[s.i],w=s.t=='w',n=P.a[P.k+1];
+ $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2><div class="big">${P.left}</div><p>${w?`Serie ${s.s} de ${L[P.l].s}`:'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`}
+function end(){clearInterval(P.tm);$('#pl').style.display='none'}
+function quit(){if(confirm('¿Salir de la rutina?')){end();P=null}}
+function finish(){end();S.sessions.push({d:today(),l:P.l,m:Math.max(1,Math.round(P.el/60))});save();P=null;beep(1500,400);alert('🎉 ¡Sesión completada! Toma agua.');T='p';render()}
+
+load();V=S.lvl;render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body></html>
