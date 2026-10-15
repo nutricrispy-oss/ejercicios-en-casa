@@ -1,0 +1,47 @@
+// Poses por ejercicio, mismo orden que EX. Cada pose:
+// [cadera x, cadera y, tronco°, brazo cercano (alto, bajo), brazo lejano, pierna cercana (muslo, pierna), pierna lejana]
+// Ángulos medidos desde "hacia abajo", positivos hacia la derecha. Props: c silla, w pared, t mesa, m 10 m, o objeto en manos, f vista de frente.
+const P12=[78.9,90.5,48.5,0,90,0,90,-48.5,-48.5,-48.5,-48.5];
+const FIG=[
+['c',[86,99,0,80,80,-80,-80,90,0,90,0],[86,99,0,-80,-80,80,80,90,0,90,0]],
+['c',[86,99,-4,5,5,5,5,90,0,90,0],[86,99,-12,5,5,5,5,125,25,90,0]],
+['c',[86,99,-4,5,5,5,5,90,0,90,0],[86,99,-6,5,5,5,5,90,90,90,0]],
+['c',[86,99,-5,140,-150,140,-150,90,0,90,0],[86,99,40,70,-160,70,-160,105,20,90,0]],
+['',[100,73,0,-30,-10,40,60,80,-5,0,0],[100,73,0,40,60,-30,-10,0,0,80,-5]],
+['w',[89.5,76.8,22,90,90,90,90,-22,-22,-22,-22],[102,84,38,45,168,45,168,-38,-38,-38,-38]],
+['c',[86,99,10,80,80,80,80,90,0,90,0],[112,73,0,20,20,20,20,0,0,0,0]],
+['f',[100,73,0,5,5,5,5,0,0,0,0],[100,73,0,160,160,160,160,12,0,12,0]],
+['',[100,73,0,80,80,80,80,0,0,0,0],[90,97,35,80,80,80,80,75,-35,75,-35]],
+['t',[65.4,79.6,29.3,15,15,15,15,-29.3,-29.3,-29.3,-29.3],[75.4,86.9,42.9,25,-62,25,-62,-42.9,-42.9,-42.9,-42.9]],
+['m',[100,73,0,-35,-10,35,10,30,10,-25,-35],[100,73,0,35,10,-35,-10,-25,-35,30,10]],
+['o',[100,73,0,3,3,3,3,0,0,0,0],[100,73,0,5,150,5,150,0,0,0,0]],
+['t',P12,P12],
+['o',[100,73,0,20,110,20,110,0,0,0,0],[90,97,35,20,110,20,110,75,-35,75,-35]],
+['',[76.6,102,63.8,0,0,0,0,-63.8,-63.8,-63.8,-63.8],[81.5,117.7,81.9,-100,37,-100,37,-81.9,-81.9,-81.9,-81.9]],
+['f',[100,73,0,5,5,5,5,0,0,0,0],[100,64,0,160,160,160,160,18,0,18,0]],
+['m',[100,70,15,-45,20,45,135,55,-20,-35,-75],[100,70,15,45,135,-45,20,-35,-75,55,-20]],
+['',[120,73,0,5,5,5,5,0,0,0,0],[96.4,96.8,0,5,5,5,5,85,-5,-10,-80]]
+];
+const PR={c:'M68 57V102H100M70 102V125M98 102V125',w:'M140 15V125',t:'M80 88H130M84 88V125M126 88V125'};
+const SW='stroke-linecap="round" stroke-linejoin="round" fill="none"';
+function jt(p,fv){
+ const U=20,F=18,T=26,S=26,r=Math.PI/180,[hx,hy,t]=p,a=p.slice(3);
+ const d=(x,y,l,g,s)=>[x+s*l*Math.sin(g*r),y+l*Math.cos(g*r)];
+ const limb=(x,y,l1,l2,g1,g2,s)=>{const k=d(x,y,l1,g1,s);return[[x,y],k,d(k[0],k[1],l2,g2,s)]};
+ const n=[hx+34*Math.sin(t*r),hy-34*Math.cos(t*r)],hd=[hx+43*Math.sin(t*r),hy-43*Math.cos(t*r)],s2=fv?-1:1;
+ return{n,hd,L:[limb(n[0],n[1],U,F,a[0],a[1],1),limb(n[0],n[1],U,F,a[2],a[3],s2),limb(hx,hy,T,S,a[4],a[5],1),limb(hx,hy,T,S,a[6],a[7],s2)]}}
+function svgAt(i,k){
+ const[pr,A,B]=FIG[i],p=A.map((v,j)=>v+(B[j]-v)*k),fv=pr.includes('f'),{n,hd,L}=jt(p,fv);
+ const ln=l=>`<polyline points="${l.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}"/>`;
+ let h='<path d="M5 125H195" stroke="var(--bd)" stroke-width="3"/>';
+ for(const c in PR)if(pr.includes(c))h+=`<path d="${PR[c]}" stroke="var(--mu)" stroke-width="3" ${SW}/>`;
+ if(pr.includes('m'))h+='<text x="100" y="138" text-anchor="middle" font-size="10" fill="var(--mu)">⟷ 10 m</text>';
+ h+=`<g stroke="var(--pr)" stroke-width="5" ${SW}><g opacity="${fv?1:.5}">${ln(L[1])}${ln(L[3])}</g>${ln([[p[0],p[1]],n])}<circle cx="${hd[0].toFixed(1)}" cy="${hd[1].toFixed(1)}" r="7" fill="var(--pr)"/>${ln(L[0])}${ln(L[2])}</g>`;
+ if(pr.includes('o'))h+=[L[0][2],L[1][2]].map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="5" fill="#f59e0b"/>`).join('');
+ return h}
+function loop(t){
+ const k=(1-Math.cos(t/2600*6.2832))/2;
+ document.querySelectorAll('svg[data-f]').forEach(e=>{if(e.offsetParent)e.innerHTML=svgAt(+e.dataset.f,k)});
+ requestAnimationFrame(loop)}
+if(typeof requestAnimationFrame!='undefined')requestAnimationFrame(loop);
+if(typeof module!='undefined')module.exports={FIG,svgAt};

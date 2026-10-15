@@ -41,13 +41,15 @@ summary{font-weight:600}
 .note{color:var(--mu);font-size:13px}
 #pl{display:none;position:fixed;inset:0;background:var(--bg);z-index:9;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:10px}
 #pl .b{max-width:320px}
-.big{font-size:110px;font-weight:800;color:var(--pr);line-height:1}
+.fg{display:block;width:100%;max-width:260px;max-height:170px;margin:6px auto}
+.big{font-size:72px;font-weight:800;color:var(--pr);line-height:1}
 </style></head>
 <body>
 <header>🏠 FitCasa</header>
 <main id="app"></main>
 <nav></nav>
 <div id="pl"></div>
+<script src="figs.js"></script>
 <script>
 const $=s=>document.querySelector(s),K='fitcasa_v1';
 const key=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -113,7 +115,7 @@ function vR(){
  const l=V,r=R[l];
  return `<div class="chips">${[1,2,3].map(i=>`<button class="${V==i?'on':''}" onclick="V=${i};render()">${L[i].n}</button>`).join('')}</div>
  <div class="c"><h2>${L[l].n}: ${r.length} ejercicios</h2><p>${L[l].s} series de ${L[l].w} s, descanso de ${L[l].r} s · ~${mins(l)} min</p><button class="b" onclick="play(${l})">▶ Empezar rutina</button></div>
- <div class="c">${r.map(i=>{const e=EX[i];return `<details><summary>${e[0]}</summary><p><span class="tag">${e[2]}</span></p><p>${e[3]}</p><p><b>Más fácil:</b> ${e[4]}</p></details>`}).join('')}</div>
+ <div class="c">${r.map(i=>{const e=EX[i];return `<details><summary>${e[0]}</summary><p><span class="tag">${e[2]}</span></p><svg data-f="${i}" viewBox="0 0 200 140" class="fg"></svg><p>${e[3]}</p><p><b>Más fácil:</b> ${e[4]}</p></details>`}).join('')}</div>
  <p class="note">Si sientes dolor, mareo o falta de aire, detente. Consulta a tu médico antes de empezar.</p>`}
 
 function vP(){
@@ -147,7 +149,7 @@ function play(l){const a=steps(l);P={l,a,k:0,left:a[0].d,pause:0,el:0};$('#pl').
 function tick(){if(P.pause)return;P.el++;P.left--;if(P.left>0&&P.left<=3)beep();if(P.left<=0)next();else drawP()}
 function next(){if(P.k>=P.a.length-1)return finish();P.k++;P.left=P.a[P.k].d;beep(1200,250);drawP()}
 function drawP(){const s=P.a[P.k],e=EX[s.i],w=s.t=='w',n=P.a[P.k+1];
- $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2><div class="big">${P.left}</div><p>${w?`Serie ${s.s} de ${L[P.l].s}`:'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`}
+ $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2>${w?`<svg data-f="${s.i}" viewBox="0 0 200 140" class="fg"></svg>`:''}<div class="big">${P.left}</div><p>${w?`Serie ${s.s} de ${L[P.l].s}`:'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`}
 function end(){clearInterval(P.tm);$('#pl').style.display='none'}
 function quit(){if(confirm('¿Salir de la rutina?')){end();P=null}}
 function finish(){end();S.sessions.push({d:today(),l:P.l,m:Math.max(1,Math.round(P.el/60))});save();P=null;beep(1500,400);alert('🎉 ¡Sesión completada! Toma agua.');T='p';render()}
