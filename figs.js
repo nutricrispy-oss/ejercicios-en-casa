@@ -20,7 +20,17 @@ const FIG=[
 ['',[76.6,102,63.8,0,0,0,0,-63.8,-63.8,-63.8,-63.8],[81.5,117.7,81.9,-100,37,-100,37,-81.9,-81.9,-81.9,-81.9]],
 ['f',[100,73,0,5,5,5,5,0,0,0,0],[100,64,0,160,160,160,160,18,0,18,0]],
 ['m',[100,70,15,-45,20,45,135,55,-20,-35,-75],[100,70,15,45,135,-45,20,-35,-75,55,-20]],
-['',[120,73,0,5,5,5,5,0,0,0,0],[96.4,96.8,0,5,5,5,5,85,-5,-10,-80]]
+['',[120,73,0,5,5,5,5,0,0,0,0],[96.4,96.8,0,5,5,5,5,85,-5,-10,-80]],
+['',[100,120,-50,45,45,45,45,140,0,140,0],[100,120,-50,45,45,45,45,92,92,140,0]],
+['t',[65.4,79.6,29.3,15,15,15,15,-29.3,-29.3,-29.3,-29.3],[65.4,79.6,29.3,15,15,15,15,-29.3,-29.3,-10,-70]],
+['',[100,120,-50,45,45,45,45,140,0,140,0],[102,120,25,10,160,10,160,125,30,125,30]],
+['t',[70,78,35,10,10,10,10,35,-5,-48,-48],[59,96.8,0,5,5,5,5,85,-5,-10,-80]],
+['t',[65.4,79.6,29.3,15,15,15,15,60,-50,-29.3,-29.3],[65.4,79.6,29.3,15,15,15,15,-29.3,-29.3,60,-50]],
+['',[100,120,-50,45,45,45,45,100,100,100,100],[100,120,-50,45,45,45,45,150,150,95,95]],
+['',[100,73,0,170,170,170,170,0,0,0,0],[100,73,0,-30,-30,-30,-30,0,0,0,0]],
+['',[100,73,0,5,5,5,5,0,0,0,0],[100,73,0,20,60,20,60,5,-170,0,0]],
+['',[100,73,0,5,5,5,5,0,0,0,0],[100,73,70,0,0,0,0,0,0,0,0]],
+['',[100,73,0,5,5,5,5,0,0,0,0],[100,73,0,90,90,60,120,0,0,0,0]]
 ];
 const PR={c:'M68 57V102H100M70 102V125M98 102V125',w:'M140 15V125',t:'M80 88H130M84 88V125M126 88V125'};
 const SW='stroke-linecap="round" stroke-linejoin="round" fill="none"';
@@ -39,9 +49,9 @@ function svgAt(i,k){
  h+=`<g stroke="var(--pr)" stroke-width="5" ${SW}><g opacity="${fv?1:.5}">${ln(L[1])}${ln(L[3])}</g>${ln([[p[0],p[1]],n])}<circle cx="${hd[0].toFixed(1)}" cy="${hd[1].toFixed(1)}" r="7" fill="var(--pr)"/>${ln(L[0])}${ln(L[2])}</g>`;
  if(pr.includes('o'))h+=[L[0][2],L[1][2]].map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="5" fill="#f59e0b"/>`).join('');
  return h}
-function loop(t){
+function drawFigs(t=performance.now()){
  const k=(1-Math.cos(t/2600*6.2832))/2;
- document.querySelectorAll('svg[data-f]').forEach(e=>{if(e.getClientRects().length)e.innerHTML=svgAt(+e.dataset.f,k)});
- requestAnimationFrame(loop)}
+ document.querySelectorAll('svg[data-f]').forEach(e=>{try{if(FIG[+e.dataset.f]&&e.getClientRects().length)e.innerHTML=svgAt(+e.dataset.f,k)}catch(x){}})}
+function loop(t){requestAnimationFrame(loop);drawFigs(t)}
 if(typeof requestAnimationFrame!='undefined')requestAnimationFrame(loop);
-if(typeof module!='undefined')module.exports={FIG,svgAt};
+if(typeof module!='undefined')module.exports={FIG,svgAt,drawFigs};

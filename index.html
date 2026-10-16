@@ -115,7 +115,7 @@ function render(){
  $('#app').innerHTML=({i:vI,r:vR,p:vP,s:vS,a:vA})[T]();
  $('nav').innerHTML=tabs.map(t=>`<button class="${T==t[0]?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}</button>`).join('');
  document.body.classList.toggle('dark',!!S.dark);
- document.querySelector('meta[name=theme-color]').content=S.dark?'#16231f':'#0f766e'}
+ document.querySelector('meta[name=theme-color]').content=S.dark?'#16231f':'#0f766e';typeof drawFigs=='function'&&drawFigs()}
 function go(t){T=t;render();scrollTo(0,0)}
 
 function vI(){
@@ -173,7 +173,7 @@ function play(l,v=0){const a=steps(l,v);P={l,a,k:0,left:a[0].d,pause:0,el:0};$('
 function tick(){if(P.pause)return;P.el++;P.left--;if(P.left>0&&P.left<=3)beep();if(P.left<=0)next();else drawP()}
 function next(){if(P.k>=P.a.length-1)return finish();P.k++;P.left=P.a[P.k].d;beep(1200,250);drawP()}
 function drawP(){const s=P.a[P.k],e=EX[s.i],w=s.t=='w',n=P.a[P.k+1];
- $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2>${w?`<svg data-f="${s.i}" viewBox="0 0 200 140" class="fg"></svg>`:''}<div class="big">${P.left}</div><p>${w?(s.x||`Serie ${s.s} de ${L[P.l].s}`):'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`}
+ $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2>${w?`<svg data-f="${s.i}" viewBox="0 0 200 140" class="fg"></svg>`:''}<div class="big">${P.left}</div><p>${w?(s.x||`Serie ${s.s} de ${L[P.l].s}`):'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`;typeof drawFigs=='function'&&drawFigs()}
 function end(){clearInterval(P.tm);$('#pl').style.display='none'}
 function quit(){if(confirm('¿Salir de la rutina?')){end();P=null}}
 function finish(){end();const m=Math.max(1,Math.round(P.el/60)),k=Math.round(MET[P.l]*(S.w||70)*m/60);S.sessions.push({d:today(),l:P.l,m,k});save();P=null;beep(1500,400);alert('🎉 ¡Sesión completada! ~'+k+' kcal (estimado). Toma agua.');T='p';render()}
