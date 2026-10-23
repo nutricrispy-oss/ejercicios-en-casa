@@ -92,13 +92,25 @@ const EX=[
 ['Círculos de brazos',0,'Ninguno','De pie, brazos extendidos a los lados. Haz círculos amplios hacia adelante y luego hacia atrás.','Hazlos más pequeños.'],
 ['Estiramiento de cuádriceps',0,'Silla (apoyo)','De pie, sujétate de una silla. Lleva un talón hacia el glúteo y sostén; cambia de pierna a mitad de tiempo.','No lleves el talón tan alto.'],
 ['Inclinación al frente',0,'Ninguno','De pie, baja el torso con las rodillas flojas y los brazos colgando. Respira profundo y sube despacio.','Dobla más las rodillas.'],
-['Estiramiento de brazos',0,'Ninguno','Estira un brazo al frente y llévalo al pecho con la otra mano; sostén y cambia de lado.','Estira con menos fuerza.']
+['Estiramiento de brazos',0,'Ninguno','Estira un brazo al frente y llévalo al pecho con la otra mano; sostén y cambia de lado.','Estira con menos fuerza.'],
+['Sentadilla sumo con giro',2,'Ninguno','Piernas bien abiertas y rodillas dobladas. Baja apoyando una mano en la rodilla, gira el torso abriendo el otro brazo hacia arriba y cambia de lado.','Baja menos y gira más despacio.'],
+['Gato-vaca a cuatro apoyos',1,'Piso o colchoneta','Apoya manos y rodillas. Sube la cadera redondeando la espalda y vuelve a bajar con calma, llevando el abdomen hacia adentro.','Haz el movimiento más corto.'],
+['Giro de torso sentado',1,'Piso o colchoneta','Sentado con las piernas cruzadas y los brazos abiertos. Gira el torso a un lado y al otro, con la espalda recta.','Gira menos y mantén las manos en las rodillas.'],
+['Rodilla al pecho a cuatro apoyos',1,'Piso o colchoneta','Manos en el piso y una rodilla apoyada. Lleva la otra rodilla hacia el pecho, vuelve a estirar la pierna hacia atrás y alterna.','Apoya las dos rodillas y mueve una pierna cada vez.'],
+['Rodilla al codo (araña)',2,'Piso o colchoneta','En plancha sobre las manos, lleva una rodilla hacia el codo del mismo lado, vuelve y alterna con control.','Haz una repetición cada 3 segundos.'],
+['Plancha a perro boca abajo',3,'Piso o colchoneta','En plancha sobre las manos, sube la cadera formando una V invertida, empuja el piso con las manos y vuelve a la plancha.','Hazlo con las rodillas apoyadas.'],
+['Bicicleta reclinada',2,'Piso o colchoneta','Sentado, inclinado hacia atrás y apoyado en las manos. Alterna una rodilla al pecho mientras la otra pierna se estira.','Apoya los antebrazos en el piso.'],
+['Abdominal clásico',1,'Piso o colchoneta','Acostado con las rodillas dobladas y las manos suaves detrás de la cabeza. Sube el pecho con el abdomen, sin tirar del cuello, y baja despacio.','Sube menos y apoya los pies contra algo.'],
+['Rodillas alternas acostado',1,'Piso o colchoneta','Acostado boca arriba, lleva una rodilla al pecho mientras la otra pierna se estira cerca del piso. Alterna con ritmo suave.','Apoya la pierna estirada en el piso.'],
+['Abdominal inverso',2,'Piso o colchoneta','Acostado, con las rodillas dobladas sobre el pecho. Sube la cadera unos centímetros con el abdomen, sin impulso, y baja controlado.','Sube solo un poco la cadera.'],
+['Plancha baja con rodilla',2,'Piso o colchoneta','En plancha sobre los antebrazos con el cuerpo recto. Lleva una rodilla hacia adelante, vuelve y alterna sin subir la cadera.','Apoya las rodillas en el piso.'],
+['Elevación en L con rodillas',3,'Piso o colchoneta','Sentado con las manos en el piso junto a las caderas. Despega la cadera, estira las piernas y lleva una rodilla al pecho; alterna. Exige fuerza de abdomen y brazos.','Mantén los pies en el piso y levanta solo una rodilla.']
 ];
-const R={1:[[0,1,2,3,4,5,6],[4,18,19,6,5,2,3]],2:[[4,7,8,9,10,11,12,3],[7,20,21,8,9,12,10,19]],3:[[4,15,13,14,17,16,12,11],[22,23,20,21,14,17,13,12]]};
+const R={1:[[0,1,2,3,4,5,6],[4,18,19,6,5,2,3],[4,29,30,35,36,31,0]],2:[[4,7,8,9,10,11,12,3],[7,20,21,8,9,12,10,19],[28,29,32,34,37,38,35,30]],3:[[4,15,13,14,17,16,12,11],[22,23,20,21,14,17,13,12],[28,33,32,38,39,37,34,35]]};
 const L={1:{n:'Novato',w:30,r:30,s:2},2:{n:'Intermedio',w:40,r:20,s:3},3:{n:'Pro',w:45,r:15,s:3}};
 const TIPS=['Calienta 2 minutos antes de empezar: marcha suave y giros de hombros.','La constancia vale más que la intensidad: 3 días por semana ya suman.','Respira de forma continua; no aguantes el aire en el esfuerzo.','Toma agua antes, durante y después de la rutina.','Duerme 7 a 8 horas: ahí tu cuerpo se recupera.','Si algo duele (no el cansancio normal), detente y consulta.'];
 
-const nv=l=>S.sessions.filter(x=>x.l==l).length%2;
+const nv=l=>S.sessions.filter(x=>x.l==l).length%3;
 const core=(l,v)=>{const c=L[l],a=[];R[l][v].forEach(i=>{for(let s=1;s<=c.s;s++){a.push({t:'w',i,s,d:c.w});a.push({t:'r',i,s,d:c.r})}});a.pop();return a};
 const WU=[24,4],ST=[25,26,27],ex=(a,x)=>a.map(i=>({t:'w',i,s:1,d:30,x}));
 const steps=(l,v=0)=>[...(S.wu?ex(WU,'Calentamiento'):[]),...core(l,v),...(S.st?ex(ST,'Estiramiento'):[])];
@@ -121,7 +133,7 @@ function go(t){T=t;render();scrollTo(0,0)}
 function vI(){
  const need=!S.w||!S.h,lv=S.sessions.filter(x=>x.l==S.lvl).length,g=goal(),w=wTot();
  if(need)return `<div class="c"><h2>¡Bienvenido a FitCasa! 👋</h2><p>Completa tus datos para empezar.</p><label>Nombre</label><input id="n" value="${esc(S.name)}"><label>Peso (kg)</label><input id="w" type="number" inputmode="decimal"><label>Altura (cm)</label><input id="h" type="number" inputmode="numeric"><label>Nivel</label><select id="l">${[1,2,3].map(i=>`<option value="${i}">${L[i].n}</option>`).join('')}</select><button class="b" onclick="setup()">Guardar y empezar</button></div>`;
- return `<div class="c"><h2>Hola${S.name?', '+esc(S.name):''} 👋</h2><p>Nivel <b>${L[S.lvl].n}</b> · racha de <b>${streak()}</b> día(s)</p><button class="b" onclick="play(${S.lvl},${nv(S.lvl)})">▶ Empezar rutina ${'AB'[nv(S.lvl)]} (~${mins(S.lvl,nv(S.lvl))} min)</button></div>
+ return `<div class="c"><h2>Hola${S.name?', '+esc(S.name):''} 👋</h2><p>Nivel <b>${L[S.lvl].n}</b> · racha de <b>${streak()}</b> día(s)</p><button class="b" onclick="play(${S.lvl},${nv(S.lvl)})">▶ Empezar rutina ${'ABC'[nv(S.lvl)]} (~${mins(S.lvl,nv(S.lvl))} min)</button></div>
  <div class="c"><h2>📅 Esta semana</h2><div class="g" style="grid-template-columns:repeat(7,1fr)">${wk()}</div><p class="note">${S.days.includes(new Date().getDay())?'Hoy toca entrenar 💪':'Hoy es día de descanso (o entrena si quieres)'} · 🟡 plan, ✅ hecho</p></div>
  <div class="c"><h2>💧 Agua de hoy</h2><div class="bar"><i style="width:${Math.min(100,w/g*100)}%"></i></div><p>${w} de ${g} ml</p><button class="b s" onclick="addW(250)">+ Vaso (250 ml)</button></div>
  <div class="c"><h2>🎯 Subir de nivel</h2><div class="bar"><i style="width:${Math.min(100,lv*10)}%"></i></div><p>${lv}/10 sesiones en ${L[S.lvl].n}${lv>=10&&S.lvl<3?'. ¡Ya puedes pasar al siguiente nivel en Ajustes!':''}</p></div>
@@ -131,7 +143,7 @@ function setup(){const w=+$('#w').value,h=+$('#h').value;if(!(w>20&&w<400&&h>100
 function vR(){
  const l=V,r=R[l][W];
  return `<div class="chips">${[1,2,3].map(i=>`<button class="${V==i?'on':''}" onclick="V=${i};render()">${L[i].n}</button>`).join('')}</div>
- <div class="chips">${['A','B'].map((x,j)=>`<button class="${W==j?'on':''}" onclick="W=${j};render()">Rutina ${x}</button>`).join('')}</div>
+ <div class="chips">${['A','B','C'].map((x,j)=>`<button class="${W==j?'on':''}" onclick="W=${j};render()">Rutina ${x}</button>`).join('')}</div>
  <div class="c"><h2>${L[l].n}: ${r.length} ejercicios</h2><p>${L[l].s} series de ${L[l].w} s, descanso de ${L[l].r} s · ~${mins(l,W)} min</p><button class="b" onclick="play(${l},${W})">▶ Empezar rutina</button></div>
  <div class="c">${r.map(i=>{const e=EX[i];return `<details><summary>${e[0]}</summary><p><span class="tag">${e[2]}</span></p><svg data-f="${i}" viewBox="0 0 200 140" class="fg"></svg><p>${e[3]}</p><p><b>Más fácil:</b> ${e[4]}</p></details>`}).join('')}</div>
  <p class="note">Si sientes dolor, mareo o falta de aire, detente. Consulta a tu médico antes de empezar.</p>`}
@@ -163,7 +175,7 @@ function vA(){return vInst()+`<div class="c"><h2>Perfil</h2><label>Nombre</label
  <div class="c"><h2>📅 Plan y avisos</h2><label>Días de entrenamiento</label><div class="chips">${[1,2,3,4,5,6,0].map(d=>`<button class="${S.days.includes(d)?'on':''}" onclick="tgDay(${d})">${'DLMXJVS'[d]}</button>`).join('')}</div><label>Hora del recordatorio (hh:mm)</label><input type="text" inputmode="numeric" placeholder="18:30" value="${S.rt}" onchange="setRt(this.value)"><label>Aviso de agua cada (horas, 0 = no)</label><input type="number" inputmode="numeric" value="${S.wi}" onchange="S.wi=+this.value||0;save()"><button class="b s" onclick="window.Notification&&Notification.requestPermission()">🔔 Activar notificaciones</button><p class="note">Los avisos llegan mientras FitCasa esté abierta o en segundo plano. Para estar seguro, usa también la alarma del celular.</p></div>
  <div class="c"><h2>Sesión y seguridad</h2><label>Calentamiento antes de la rutina</label>${yn('wu')}<label>Estiramiento al final</label>${yn('st')}<button class="b s" onclick="setPin()">🔒 ${S.pin?'Cambiar':'Crear'} PIN</button>${S.pin?'<button class="b s" style="margin-top:8px" onclick="noPin()">Quitar PIN</button>':''}</div>
  <div class="c"><h2>Copia de seguridad</h2><button class="b s" onclick="exp()">⬇ Exportar datos</button><input type="file" id="f" accept=".json" hidden onchange="imp(this.files[0])"><button class="b s" style="margin-top:8px" onclick="$('#f').click()">⬆ Importar datos</button><button class="b s" style="margin-top:8px" onclick="if(confirm('¿Borrar todos los datos?')){localStorage.removeItem(K);load();render()}">🗑 Borrar todo</button></div>
- <p class="note">FitCasa v2 · Tus datos se guardan solo en este teléfono. No reemplaza la guía de un profesional de la salud.</p>`}
+ <p class="note">FitCasa v3 · Tus datos se guardan solo en este teléfono. No reemplaza la guía de un profesional de la salud.</p>`}
 function exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='fitcasa-backup-'+today()+'.json';a.click()}
 function imp(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=Object.assign(S,JSON.parse(r.result));save();render();alert('Datos importados.')}catch(e){alert('El archivo no es válido.')}};r.readAsText(f)}
 
