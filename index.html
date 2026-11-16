@@ -43,6 +43,10 @@ summary{font-weight:600}
 #pl .b{max-width:320px}
 #pl2{display:none;position:fixed;inset:0;background:var(--bg);z-index:30;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px}#pl2 .b{max-width:200px}
 .fg{display:block;width:100%;max-width:260px;max-height:170px;margin:6px auto}
+.gw{text-align:center;margin:6px 0}.gif{display:block;width:180px;height:180px;margin:6px auto;border-radius:10px;background:#fff}.gw small{display:block;font-size:11px;color:var(--mu)}
+.cs{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer}.cs::-webkit-details-marker{display:none}.cs::after{content:'▾';margin-left:auto;color:var(--mu)}details[open]>.cs::after{content:'▴'}
+.cl{display:flex;gap:10px;align-items:center}.cl img{width:48px;height:48px;border-radius:8px;background:#fff;flex:none}
+.chips.w{flex-wrap:wrap}.chips.w button{flex:none;padding:7px 12px;font-size:14px}
 .big{font-size:72px;font-weight:800;color:var(--pr);line-height:1}
 </style></head>
 <body>
@@ -52,6 +56,7 @@ summary{font-weight:600}
 <div id="pl"></div>
 <div id="pl2"></div>
 <script src="figs.js"></script>
+<script src="catalogo.js"></script>
 <script>
 const $=s=>document.querySelector(s),K='fitcasa_ejercicios_v1';
 const key=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -60,7 +65,7 @@ const parse=s=>{const m=s.trim().match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let S,T='i',V=1,W=0,P=null;
 function load(){let o=null;try{o=JSON.parse(localStorage.getItem(K))}catch(e){}
- if(!o){try{o=JSON.parse(localStorage.getItem('fitcasa_v1'));if(o){localStorage.setItem(K,JSON.stringify(o));localStorage.removeItem('fitcasa_v1')}}catch(e){}}S=Object.assign({name:'',w:0,h:0,lvl:1,dark:0,sessions:[],weights:[],water:{},wu:1,st:1,days:[1,3,5],rt:'',wi:0,pin:'',waist:[],wd:[]},o||{})}
+ if(!o){try{o=JSON.parse(localStorage.getItem('fitcasa_v1'));if(o){localStorage.setItem(K,JSON.stringify(o));localStorage.removeItem('fitcasa_v1')}}catch(e){}}S=Object.assign({name:'',w:0,h:0,lvl:1,dark:0,sessions:[],weights:[],water:{},wu:1,st:1,gif:1,days:[1,3,5],rt:'',wi:0,pin:'',waist:[],wd:[]},o||{})}
 function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
 
 // [nombre, nivel, material, pasos, versión más fácil]
@@ -106,6 +111,7 @@ const EX=[
 ['Plancha baja con rodilla',2,'Piso o colchoneta','En plancha sobre los antebrazos con el cuerpo recto. Lleva una rodilla hacia adelante, vuelve y alterna sin subir la cadera.','Apoya las rodillas en el piso.'],
 ['Elevación en L con rodillas',3,'Piso o colchoneta','Sentado con las manos en el piso junto a las caderas. Despega la cadera, estira las piernas y lleva una rodilla al pecho; alterna. Exige fuerza de abdomen y brazos.','Mantén los pies en el piso y levanta solo una rodilla.']
 ];
+const GID={5:'0659',9:'0493',14:'0662',34:'0003',35:'0274',37:'0872'};
 const R={1:[[0,1,2,3,4,5,6],[4,18,19,6,5,2,3],[4,29,30,35,36,31,0]],2:[[4,7,8,9,10,11,12,3],[7,20,21,8,9,12,10,19],[28,29,32,34,37,38,35,30]],3:[[4,15,13,14,17,16,12,11],[22,23,20,21,14,17,13,12],[28,33,32,38,39,37,34,35]]};
 const L={1:{n:'Novato',w:30,r:30,s:2},2:{n:'Intermedio',w:40,r:20,s:3},3:{n:'Pro',w:45,r:15,s:3}};
 const TIPS=['Calienta 2 minutos antes de empezar: marcha suave y giros de hombros.','La constancia vale más que la intensidad: 3 días por semana ya suman.','Respira de forma continua; no aguantes el aire en el esfuerzo.','Toma agua antes, durante y después de la rutina.','Duerme 7 a 8 horas: ahí tu cuerpo se recupera.','Si algo duele (no el cansancio normal), detente y consulta.'];
@@ -124,10 +130,10 @@ function streak(){const ds=new Set(S.sessions.map(x=>x.d));let n=0,d=new Date();
 
 const tabs=[['i','🏠','Inicio'],['r','🏋️','Rutinas'],['p','📈','Progreso'],['s','💧','Salud'],['a','⚙️','Ajustes']];
 function render(){
- $('#app').innerHTML=({i:vI,r:vR,p:vP,s:vS,a:vA})[T]();
- $('nav').innerHTML=tabs.map(t=>`<button class="${T==t[0]?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}</button>`).join('');
+ $('#app').innerHTML=({i:vI,r:vR,p:vP,s:vS,a:vA,c:vC})[T]();
+ $('nav').innerHTML=tabs.map(t=>`<button class="${(T=='c'?'r':T)==t[0]?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}</button>`).join('');
  document.body.classList.toggle('dark',!!S.dark);
- document.querySelector('meta[name=theme-color]').content=S.dark?'#16231f':'#0f766e';typeof drawFigs=='function'&&drawFigs()}
+ document.querySelector('meta[name=theme-color]').content=S.dark?'#16231f':'#0f766e';typeof drawFigs=='function'&&drawFigs();if(T=='c')cUp();if(T=='a')updMedia()}
 function go(t){T=t;render();scrollTo(0,0)}
 
 function vI(){
@@ -142,10 +148,10 @@ function setup(){const w=+$('#w').value,h=+$('#h').value;if(!(w>20&&w<400&&h>100
 
 function vR(){
  const l=V,r=R[l][W];
- return `<div class="chips">${[1,2,3].map(i=>`<button class="${V==i?'on':''}" onclick="V=${i};render()">${L[i].n}</button>`).join('')}</div>
+ return (CATA.length?`<button class="b s" style="margin-bottom:10px" onclick="go('c')">📚 Catálogo de ejercicios (${CATA.length})</button>`:'')+`<div class="chips">${[1,2,3].map(i=>`<button class="${V==i?'on':''}" onclick="V=${i};render()">${L[i].n}</button>`).join('')}</div>
  <div class="chips">${['A','B','C'].map((x,j)=>`<button class="${W==j?'on':''}" onclick="W=${j};render()">Rutina ${x}</button>`).join('')}</div>
  <div class="c"><h2>${L[l].n}: ${r.length} ejercicios</h2><p>${L[l].s} series de ${L[l].w} s, descanso de ${L[l].r} s · ~${mins(l,W)} min</p><button class="b" onclick="play(${l},${W})">▶ Empezar rutina</button></div>
- <div class="c">${r.map(i=>{const e=EX[i];return `<details><summary>${e[0]}</summary><p><span class="tag">${e[2]}</span></p><svg data-f="${i}" viewBox="0 0 200 140" class="fg"></svg><p>${e[3]}</p><p><b>Más fácil:</b> ${e[4]}</p></details>`}).join('')}</div>
+ <div class="c">${r.map(i=>{const e=EX[i];return `<details><summary>${e[0]}</summary><p><span class="tag">${e[2]}</span></p>${fig(i)}<p>${e[3]}</p><p><b>Más fácil:</b> ${e[4]}</p></details>`}).join('')}</div>
  <p class="note">Si sientes dolor, mareo o falta de aire, detente. Consulta a tu médico antes de empezar.</p>`}
 
 function vP(){
@@ -173,19 +179,20 @@ function undoW(){(S.water[today()]||[]).pop();save();render()}
 
 function vA(){return vInst()+`<div class="c"><h2>Perfil</h2><label>Nombre</label><input value="${esc(S.name)}" onchange="S.name=this.value;save()"><label>Nivel</label><select onchange="S.lvl=+this.value;V=S.lvl;save()">${[1,2,3].map(i=>`<option value="${i}" ${S.lvl==i?'selected':''}>${L[i].n}</option>`).join('')}</select><label>Modo oscuro</label><select onchange="S.dark=+this.value;save();render()"><option value="0">No</option><option value="1" ${S.dark?'selected':''}>Sí</option></select></div>
  <div class="c"><h2>📅 Plan y avisos</h2><label>Días de entrenamiento</label><div class="chips">${[1,2,3,4,5,6,0].map(d=>`<button class="${S.days.includes(d)?'on':''}" onclick="tgDay(${d})">${'DLMXJVS'[d]}</button>`).join('')}</div><label>Hora del recordatorio (hh:mm)</label><input type="text" inputmode="numeric" placeholder="18:30" value="${S.rt}" onchange="setRt(this.value)"><label>Aviso de agua cada (horas, 0 = no)</label><input type="number" inputmode="numeric" value="${S.wi}" onchange="S.wi=+this.value||0;save()"><button class="b s" onclick="window.Notification&&Notification.requestPermission()">🔔 Activar notificaciones</button><p class="note">Los avisos llegan mientras FitCasa esté abierta o en segundo plano. Para estar seguro, usa también la alarma del celular.</p></div>
- <div class="c"><h2>Sesión y seguridad</h2><label>Calentamiento antes de la rutina</label>${yn('wu')}<label>Estiramiento al final</label>${yn('st')}<button class="b s" onclick="setPin()">🔒 ${S.pin?'Cambiar':'Crear'} PIN</button>${S.pin?'<button class="b s" style="margin-top:8px" onclick="noPin()">Quitar PIN</button>':''}</div>
+ <div class="c"><h2>Sesión y seguridad</h2><label>Calentamiento antes de la rutina</label>${yn('wu')}<label>Estiramiento al final</label>${yn('st')}<label>Mostrar GIF reales cuando estén instalados</label>${yn('gif')}<button class="b s" onclick="setPin()">🔒 ${S.pin?'Cambiar':'Crear'} PIN</button>${S.pin?'<button class="b s" style="margin-top:8px" onclick="noPin()">Quitar PIN</button>':''}</div>
+ <div class="c"><h2>🖼️ GIF del catálogo</h2><p class="note" id="gst">…</p><input type="file" id="gf" hidden onchange="impPack(this.files[0])"><button class="b s" onclick="$('#gf').click()">Importar GIF</button><button class="b s" style="margin-top:8px" onclick="delPack()">Quitar GIF de este teléfono</button><p class="note">Elige el archivo fitcasa-gifs.pack. Los GIF son © Gym visual, solo para uso personal, y quedan guardados únicamente en este teléfono (no se suben a ningún sitio ni entran en la copia de seguridad).</p></div>
  <div class="c"><h2>Copia de seguridad</h2><button class="b s" onclick="exp()">⬇ Exportar datos</button><input type="file" id="f" accept=".json" hidden onchange="imp(this.files[0])"><button class="b s" style="margin-top:8px" onclick="$('#f').click()">⬆ Importar datos</button><button class="b s" style="margin-top:8px" onclick="if(confirm('¿Borrar todos los datos?')){localStorage.removeItem(K);load();render()}">🗑 Borrar todo</button></div>
- <p class="note">FitCasa v3 · Tus datos se guardan solo en este teléfono. No reemplaza la guía de un profesional de la salud.</p>`}
+ <p class="note">FitCasa v5 · Ilustraciones del catálogo © Gym visual (gymvisual.com), solo uso personal. Tus datos se guardan solo en este teléfono. No reemplaza la guía de un profesional de la salud.</p>`}
 function exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='fitcasa-backup-'+today()+'.json';a.click()}
 function imp(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=Object.assign(S,JSON.parse(r.result));save();render();alert('Datos importados.')}catch(e){alert('El archivo no es válido.')}};r.readAsText(f)}
 
 // Rutina guiada
 function beep(f=880,ms=120){try{const c=beep.c||(beep.c=new(window.AudioContext||window.webkitAudioContext)()),o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+ms/1000)}catch(e){}}
 function play(l,v=0){const a=steps(l,v);P={l,a,k:0,left:a[0].d,pause:0,el:0};$('#pl').style.display='flex';drawP();P.tm=setInterval(tick,1000);try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{})}catch(e){}}
-function tick(){if(P.pause)return;P.el++;P.left--;if(P.left>0&&P.left<=3)beep();if(P.left<=0)next();else drawP()}
+function tick(){if(P.pause)return;P.el++;P.left--;if(P.left>0&&P.left<=3)beep();if(P.left<=0)next();else{const b=$('#bg');b?b.textContent=P.left:drawP()}}
 function next(){if(P.k>=P.a.length-1)return finish();P.k++;P.left=P.a[P.k].d;beep(1200,250);drawP()}
 function drawP(){const s=P.a[P.k],e=EX[s.i],w=s.t=='w',n=P.a[P.k+1];
- $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2>${w?`<svg data-f="${s.i}" viewBox="0 0 200 140" class="fg"></svg>`:''}<div class="big">${P.left}</div><p>${w?(s.x||`Serie ${s.s} de ${L[P.l].s}`):'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`;typeof drawFigs=='function'&&drawFigs()}
+ $('#pl').innerHTML=`<p class="note">Paso ${P.k+1} de ${P.a.length}</p><h2 style="font-size:26px">${w?e[0]:'Descanso'}</h2>${w?fig(s.i):''}<div class="big" id="bg">${P.left}</div><p>${w?(s.x||`Serie ${s.s} de ${L[P.l].s}`):'Siguiente: '+EX[n.i][0]}</p><p style="max-width:420px">${w?e[3]:''}</p><button class="b" onclick="P.pause=!P.pause;drawP()">${P.pause?'▶ Continuar':'⏸ Pausar'}</button><button class="b s" onclick="next()">⏭ Saltar</button><button class="b s" onclick="quit()">✖ Salir</button>`;typeof drawFigs=='function'&&drawFigs()}
 function end(){clearInterval(P.tm);$('#pl').style.display='none'}
 function quit(){if(confirm('¿Salir de la rutina?')){end();P=null}}
 function finish(){end();const m=Math.max(1,Math.round(P.el/60)),k=Math.round(MET[P.l]*(S.w||70)*m/60);S.sessions.push({d:today(),l:P.l,m,k});save();P=null;beep(1500,400);alert('🎉 ¡Sesión completada! ~'+k+' kcal (estimado). Toma agua.');T='p';render()}
@@ -220,6 +227,31 @@ function note(t){if(window.Notification&&Notification.permission=='granted'&&nav
 setInterval(()=>{const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),k=today();
  if(S.rt&&S.rt==hm&&S.days.includes(n.getDay())&&S.nt!=k&&!sesToday()){S.nt=k;save();note('💪 Hora de tu rutina de hoy')}
  if(S.wi>0&&n.getHours()>=8&&n.getHours()<21&&Date.now()-LW>=S.wi*36e5&&wTot()<goal()){LW=Date.now();note('💧 Toma un vaso de agua')}},30000);
+// Catálogo y GIF reales (opcionales: si la carpeta gifs/ no está, se usan las figuras)
+const CATA=typeof CAT!='undefined'?CAT:[];
+let GOK,CQ={q:'',t:'',n:'',lim:30};
+const CT={abd:'Abdomen',core:'Core',pier:'Piernas y glúteos',push:'Pecho y brazos',card:'Cardio suave',est:'Estiramientos'},CN=['Estiramiento','Novato','Intermedio','Pro'];
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const fig=i=>{const g=GID[i];if(g&&S.gif&&GOK!==false)return `<div class="gw"><img class="gif" src="gifs/${g}.gif" alt="" onerror="swapFig(this,${i})"><small>© Gym visual · gymvisual.com</small></div>`;return `<svg data-f="${i}" viewBox="0 0 200 140" class="fg"></svg>`};
+function swapFig(el,i){el.parentNode.outerHTML=`<svg data-f="${i}" viewBox="0 0 200 140" class="fg"></svg>`;typeof drawFigs=='function'&&drawFigs()}
+function cList(){const q=norm(CQ.q.trim()),a=CATA.filter(x=>(!CQ.t||x[4]==CQ.t)&&(CQ.n===''||String(x[3])==CQ.n)&&(!q||norm(x[1]+' '+x[2]+' '+x[5]).includes(q)));
+ return{a,html:a.slice(0,CQ.lim).map(x=>`<details ontoggle="cOpen(this,'${x[0]}')"><summary class="cs"><span class="cl"><img loading="lazy" src="thumbs/${x[0]}.jpg" alt="" onerror="this.style.display='none'"><span>${esc(x[1])}<br><span class="tag">${CN[x[3]]}</span> <span class="tag">${esc(x[5])}</span></span></span></summary><div class="gw"></div><ol style="padding-left:20px">${x[6].map(p=>`<li>${esc(p)}</li>`).join('')}</ol></details>`).join('')||'<p class="note">Sin resultados.</p>'}}
+function cUp(){const r=cList(),e=$('#cl');if(!e)return;e.innerHTML=r.html+(r.a.length>CQ.lim?`<button class="b s" style="margin-top:8px" onclick="CQ.lim+=30;cUp()">Ver más (${r.a.length-CQ.lim})</button>`:'');$('#cn').textContent=r.a.length+' ejercicios'}
+function cOpen(el,id){if(!el.open||el.dataset.l)return;el.dataset.l=1;if(S.gif&&GOK!==false)el.querySelector('.gw').innerHTML=`<img class="gif" src="gifs/${id}.gif" alt="" onerror="this.parentNode.innerHTML='<p class=note>GIF no disponible.</p>'"><small>© Gym visual · gymvisual.com</small>`}
+function vC(){return `<button class="b s" style="margin-bottom:10px" onclick="go('r')">← Volver a Rutinas</button>${GOK===false?'<div class="c"><p class="note">Los GIF no están instalados en este teléfono: por ahora se ven solo los textos.</p><button class="b s" onclick="go(\'a\')">Ir a Ajustes para importarlos</button></div>':''}
+ <div class="c"><input type="text" placeholder="Buscar: abdominal, sentadilla, glúteos…" value="${esc(CQ.q)}" oninput="CQ.q=this.value;CQ.lim=30;cUp()">
+ <div class="chips w">${[['','Todos'],...Object.entries(CT)].map(([k,v])=>`<button class="${CQ.t==k?'on':''}" onclick="CQ.t='${k}';CQ.lim=30;render()">${v}</button>`).join('')}</div>
+ <div class="chips w">${[['','Todos los niveles'],['1','Novato'],['2','Intermedio'],['3','Pro']].map(([k,v])=>`<button class="${CQ.n===k?'on':''}" onclick="CQ.n='${k}';CQ.lim=30;render()">${v}</button>`).join('')}</div><p class="note" id="cn"></p></div>
+ <div class="c" id="cl"></div>
+ <p class="note">Ilustraciones © Gym visual (gymvisual.com), solo para uso personal. Textos: hasaneyldrm/exercises-dataset (licencia MIT), traducidos al español.</p>`}
+// GIF guardados en el teléfono (importados desde un paquete); si no hay, se usan las figuras
+const MK='fitcasa-media',mu=p=>new URL(p,location.href).href;
+async function mediaN(){try{return (await (await caches.open(MK)).keys()).length}catch(e){return 0}}
+async function checkGifs(){if(!CATA.length||!window.caches)return;let ok=false;try{ok=!!(await (await caches.open(MK)).match(mu('gifs/'+CATA[0][0]+'.gif')));if(!ok)ok=await fetch('gifs/'+CATA[0][0]+'.gif',{method:'HEAD'}).then(r=>r.ok).catch(()=>false)}catch(e){}const ch=GOK!==ok;GOK=ok;if(ch&&(T=='c'||T=='a'))render()}
+async function updMedia(){const n=await mediaN(),e=$('#gst');if(e)e.textContent=n?'Instalados: '+Math.floor(n/2)+' GIF con su miniatura.':'Aún no hay GIF instalados en este teléfono.'}
+async function impPack(f){if(!f)return;const st=$('#gst');try{if(!window.caches)throw 1;const buf=await f.arrayBuffer(),dv=new DataView(buf),hl=dv.getUint32(0,true),hd=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,4,hl)));if(hd.v!==1||!Array.isArray(hd.files))throw 1;let off=4+hl,n=0;const tot=hd.files.reduce((a,x)=>a+x.s,0);if(!hd.files.length||off+tot>buf.byteLength)throw 1;for(const x of hd.files)if(!/^(gifs|thumbs)\/\d+\.(gif|jpg)$/.test(x.n)||!(x.s>0)||!/^image\/(gif|jpeg)$/.test(x.t))throw 1;const c=await caches.open(MK);for(const x of hd.files){await c.put(mu(x.n),new Response(new Blob([buf.slice(off,off+x.s)],{type:x.t}),{headers:{'Content-Type':x.t}}));off+=x.s;n++;if(st&&n%15==0)st.textContent='Importando… '+Math.round(n/hd.files.length*100)+'%'}try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}GOK=true;toast('✅ GIF instalados ('+Math.floor(n/2)+')');render()}catch(e){alert('Ese archivo no es un paquete de GIF válido de FitCasa.');updMedia()}}
+async function delPack(){if(!confirm('¿Quitar los GIF de este teléfono?'))return;try{await caches.delete(MK)}catch(e){}GOK=false;render()}
+checkGifs();
 load();V=S.lvl;render();lock();phLoad();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
